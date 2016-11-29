@@ -13,3 +13,5 @@ https://github.com/KDE/ksecrets
 https://community.kde.org/KDE_Utils/ksecretsservice
 
 At least on my Fedora box where I try to use KDE only, the master password was not visible in KWalletManager but instead in Seahorse.
+
+https://m7i.org/tips/chromium-keyring/
