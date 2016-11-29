@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %fragmentName
+Bundle-SymbolicName: org.eclipse.equinox.security.linux;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: %providerName
+Fragment-Host: org.eclipse.equinox.security;bundle-version="[1.0.0,2.0.0)"
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Eclipse-PlatformFilter: (osgi.os=linux)
+Bundle-Localization: fragment
+Export-Package: org.eclipse.equinox.internal.security.linux;x-internal:=true,
+ org.eclipse.equinox.internal.security.linux.nls;x-internal:=true
+Bundle-NativeCode: linux/ppc/libkeystorelinuxnative.so; selection-filter="(& (osgi.os=linux) (osgi.arch=ppc))",
+ linux/x86/libkeystorelinuxnative.so; selection-filter="(& (osgi.os=linux) (osgi.arch=x86))",
+ linux/x86_64/libkeystorelinuxnative.so; selection-filter="(& (osgi.os=linux) (osgi.arch=x86_64))"

@@ -1,0 +1,6 @@
+target/
+natives/**/*.o
+natives/**/*.so
+.classpath
+.project
+.settings/
