@@ -1,0 +1,13 @@
+tagVersion='0.2.0'
+nextVersion='1.0.0'
+timestamp=`date -u +%Y%m%d%H%M`
+releaseVersion=$tagVersion.$timestamp
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -DnewVersion=$releaseVersion
+git commit -am "Prepare release $releaseVersion"
+git tag $releaseVersion
+mvn clean verify
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -Dtycho.mode=maven -DnewVersion=$nextVersion-SNAPSHOT
+git commit -am "Prepare for next development iteration"
+git push && git push --tags
+
+Upload artifact on GitHub
