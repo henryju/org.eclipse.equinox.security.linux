@@ -30,6 +30,7 @@ public class LinuxPasswordProvider extends PasswordProvider {
 		System.loadLibrary("keystorelinuxnative"); //$NON-NLS-1$
 	}
 
+	@Override
 	public PBEKeySpec getPassword(IPreferencesContainer container, int passwordType) {
 
 		boolean newPassword = (passwordType & CREATE_NEW_PASSWORD) != 0;

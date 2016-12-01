@@ -26,12 +26,46 @@ equinox_get_schema (void)
 
 #define EQUINOX_SCHEMA  equinox_get_schema ()
 
+static void unlock_secret_service(JNIEnv *env)
+{
+	GError *error = NULL;
+	GList *l, *ul;
+	gchar* lbl;
+	gint nu;
+	
+	SecretService*	secretservice = secret_service_get_sync(SECRET_SERVICE_LOAD_COLLECTIONS, NULL, &error);
+ 	if (error) {
+ 	  char buffer [60];
+		sprintf(buffer, "Unable to get secret service: %s", error->message);
+ 		(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), buffer);
+ 	}
+ 
+	SecretCollection*	defaultcollection = secret_collection_for_alias_sync(secretservice, SECRET_COLLECTION_DEFAULT, SECRET_COLLECTION_NONE, NULL, &error);
+ 	if (error) {
+ 	  char buffer [60];
+		sprintf(buffer, "Unable to get secret service: %s", error->message);
+ 		(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), buffer);
+ 	}
+
+	if (secret_collection_get_locked(defaultcollection))
+	{
+		lbl = secret_collection_get_label(defaultcollection);
+		l = NULL;
+		g_list_append(l, defaultcollection);
+		nu = secret_service_unlock_sync(secretservice, l, NULL, &ul, &error);
+		g_list_free(l);
+		g_list_free(ul);
+	}
+	return;
+}
+
 JNIEXPORT jstring JNICALL Java_org_eclipse_equinox_internal_security_linux_LinuxPasswordProvider_getMasterPassword(JNIEnv *env, jobject this) {
   GError *error = NULL;
   jstring result;
   
-	gchar *password = secret_password_lookup_sync (EQUINOX_SCHEMA, NULL, &error,
-	                                               NULL);
+  unlock_secret_service(env);	
+  
+	gchar *password = secret_password_lookup_sync(EQUINOX_SCHEMA, NULL, &error, NULL);
 	
 	if (error != NULL) {
 	    (*env)->ExceptionClear(env);
@@ -51,6 +85,8 @@ JNIEXPORT jstring JNICALL Java_org_eclipse_equinox_internal_security_linux_Linux
 
 JNIEXPORT void JNICALL Java_org_eclipse_equinox_internal_security_linux_LinuxPasswordProvider_saveMasterPassword(JNIEnv *env, jobject this, jstring password) {
 	GError *error = NULL;
+	
+	unlock_secret_service(env);
 	
 	const char *passwordUTF = (*env)->GetStringUTFChars(env, password, NULL);
 	secret_password_store_sync (EQUINOX_SCHEMA, SECRET_COLLECTION_DEFAULT,
