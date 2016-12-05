@@ -34,27 +34,42 @@ static void unlock_secret_service(JNIEnv *env)
 	gint nu;
 	
 	SecretService*	secretservice = secret_service_get_sync(SECRET_SERVICE_LOAD_COLLECTIONS, NULL, &error);
- 	if (error) {
+ 	if (error != NULL) {
+	  (*env)->ExceptionClear(env);
  	  char buffer [60];
 		sprintf(buffer, "Unable to get secret service: %s", error->message);
  		(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), buffer);
+ 		g_error_free (error);
+ 		return;
  	}
  
 	SecretCollection*	defaultcollection = secret_collection_for_alias_sync(secretservice, SECRET_COLLECTION_DEFAULT, SECRET_COLLECTION_NONE, NULL, &error);
- 	if (error) {
+ 	if (error != NULL) {
+	  (*env)->ExceptionClear(env);
  	  char buffer [60];
 		sprintf(buffer, "Unable to get secret service: %s", error->message);
  		(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), buffer);
+ 		g_error_free (error);
+ 		return;
  	}
 
 	if (secret_collection_get_locked(defaultcollection))
 	{
 		lbl = secret_collection_get_label(defaultcollection);
 		l = NULL;
-		g_list_append(l, defaultcollection);
+		l = g_list_append(l, defaultcollection);
 		nu = secret_service_unlock_sync(secretservice, l, NULL, &ul, &error);
 		g_list_free(l);
 		g_list_free(ul);
+		if (error != NULL) {
+		  (*env)->ExceptionClear(env);
+	 	  char buffer [60];
+			sprintf(buffer, "Unable to unlock: %s", error->message);
+	 		(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), buffer);
+	 		g_error_free (error);
+	 		return;
+	 	}
+	 	
 	}
 	return;
 }
@@ -63,7 +78,10 @@ JNIEXPORT jstring JNICALL Java_org_eclipse_equinox_internal_security_linux_Linux
   GError *error = NULL;
   jstring result;
   
-  unlock_secret_service(env);	
+  unlock_secret_service(env);
+  if ((*env)->ExceptionOccurred(env)) {
+    return NULL;
+  }	
   
 	gchar *password = secret_password_lookup_sync(EQUINOX_SCHEMA, NULL, &error, NULL);
 	
@@ -73,9 +91,11 @@ JNIEXPORT jstring JNICALL Java_org_eclipse_equinox_internal_security_linux_Linux
 			sprintf(buffer, "%s.  Result: %d", error->message, error->code);
 			(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), buffer);
 	    g_error_free (error);
+	    return NULL;
 	} else if (password == NULL) {
 	    (*env)->ExceptionClear(env);
 			(*env)->ThrowNew(env, (* env)->FindClass(env, "java/lang/SecurityException"), "Unable to find password");
+			return NULL;
 	} else {
 	    result = (*env)->NewStringUTF(env, password);
 			free(password);
@@ -87,7 +107,10 @@ JNIEXPORT void JNICALL Java_org_eclipse_equinox_internal_security_linux_LinuxPas
 	GError *error = NULL;
 	
 	unlock_secret_service(env);
-	
+	if ((*env)->ExceptionOccurred(env)) {
+    return;
+  }
+  
 	const char *passwordUTF = (*env)->GetStringUTFChars(env, password, NULL);
 	secret_password_store_sync (EQUINOX_SCHEMA, SECRET_COLLECTION_DEFAULT,
 	                            "Equinox master password", passwordUTF, NULL, &error,
