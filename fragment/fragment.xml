@@ -8,12 +8,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<!--
-
-
-
--->
-<?eclipse version="3.2"?>
+<?eclipse version="3.4"?>
 <fragment>
    <extension
          id="LinuxKeystoreIntegration"
