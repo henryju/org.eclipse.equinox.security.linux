@@ -12,7 +12,7 @@
    <description url="http://sonar-ide.codehaus.org/">
       SonarLint for Eclipse
    </description>
-   <bundle id="org.eclipse.equinox.security.linux" version="1.0.0.qualifier">
+   <bundle id="org.eclipse.equinox.security.linux" version="1.0.0.201612070922">
       <category name="org.eclipse.equinox.security.category"/>
    </bundle>
    <category-def name="org.eclipse.equinox.security.category" label="Eclipse secure storage providers"/>
