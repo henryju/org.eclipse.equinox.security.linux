@@ -11,7 +11,7 @@
 <feature
       id="org.eclipse.equinox.security.linux.feature"
       label="%feature_name"
-      version="1.0.0.201612070922"
+      version="1.1.0.qualifier"
       provider-name="%provider_name">
 
    <description url="https://github.com/henryju/org.eclipse.equinox.security.linux">
