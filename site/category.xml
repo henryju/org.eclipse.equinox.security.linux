@@ -9,8 +9,8 @@
 
 -->
 <site>
-   <description url="http://sonar-ide.codehaus.org/">
-      SonarLint for Eclipse
+   <description url="https://github.com/henryju/org.eclipse.equinox.security.linux">
+      Native secure storage provider for Linux
    </description>
    <bundle id="org.eclipse.equinox.security.linux" version="1.1.0.qualifier">
       <category name="org.eclipse.equinox.security.category"/>
